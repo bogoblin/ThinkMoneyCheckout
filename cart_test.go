@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -22,10 +21,10 @@ func TestCalculateTotal(t *testing.T) {
 		&MultiPrice{sku: "B", quantity: 2, price: 45},
 	}
 	tests := []struct {
-		name  string
-		args  args
-		want  int
-		error error
+		name     string
+		args     args
+		want     int
+		hasError bool
 	}{
 		{
 			"Returns 0 if no items in cart",
@@ -35,7 +34,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        []Deal{},
 			},
 			0,
-			nil,
+			false,
 		},
 		{
 			"No deals apply",
@@ -50,7 +49,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			2*50 + 30 + 3*20 + 2*15,
-			nil,
+			false,
 		},
 		{
 			"Deals from example each apply once",
@@ -65,7 +64,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			130 + 45 + 20 + 15,
-			nil,
+			false,
 		},
 		{
 			"Deals from example apply multiple times",
@@ -79,7 +78,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			2*130 + 4*45 + 20,
-			nil,
+			false,
 		},
 		{
 			"Error when SKU does not exist",
@@ -91,13 +90,20 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			0,
-			fmt.Errorf("SKU E does not exist"),
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := CalculateTotal(tt.args.skusInCart, tt.args.unitPriceMap, tt.args.deals); got != tt.want {
+			got, err := CalculateTotal(tt.args.skusInCart, tt.args.unitPriceMap, tt.args.deals)
+			if got != tt.want {
 				t.Errorf("CalculateTotal() = %v, want %v", got, tt.want)
+			}
+			if tt.hasError && err == nil {
+				t.Errorf("CalculateTotal() was supposed to return error")
+			}
+			if !tt.hasError && err != nil {
+				t.Errorf("CalculateTotal() returned error %v", err)
 			}
 		})
 	}
