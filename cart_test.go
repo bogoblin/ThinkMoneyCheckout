@@ -1,6 +1,9 @@
 package ThinkMoneyCheckout
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestCalculateTotal(t *testing.T) {
 	type args struct {
@@ -29,9 +32,10 @@ func TestCalculateTotal(t *testing.T) {
 		},
 	}
 	tests := []struct {
-		name string
-		args args
-		want int
+		name  string
+		args  args
+		want  int
+		error error
 	}{
 		{
 			"Returns 0 if no items in cart",
@@ -41,6 +45,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        []Deal{},
 			},
 			0,
+			nil,
 		},
 		{
 			"No deals apply",
@@ -55,6 +60,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			2*50 + 30 + 3*20 + 2*15,
+			nil,
 		},
 		{
 			"Deals from example each apply once",
@@ -69,6 +75,7 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			130 + 45 + 20 + 15,
+			nil,
 		},
 		{
 			"Deals from example apply multiple times",
@@ -82,11 +89,24 @@ func TestCalculateTotal(t *testing.T) {
 				deals:        exampleDeals,
 			},
 			2*130 + 4*45 + 20,
+			nil,
+		},
+		{
+			"Error when SKU does not exist",
+			args{
+				skusInCart: map[string]int{
+					"E": 5,
+				},
+				unitPriceMap: exampleUnitPriceMap,
+				deals:        exampleDeals,
+			},
+			0,
+			fmt.Errorf("SKU E does not exist"),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CalculateTotal(tt.args.skusInCart, tt.args.unitPriceMap, tt.args.deals); got != tt.want {
+			if got, _ := CalculateTotal(tt.args.skusInCart, tt.args.unitPriceMap, tt.args.deals); got != tt.want {
 				t.Errorf("CalculateTotal() = %v, want %v", got, tt.want)
 			}
 		})

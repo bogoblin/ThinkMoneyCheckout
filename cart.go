@@ -1,5 +1,7 @@
 package ThinkMoneyCheckout
 
+import "fmt"
+
 type Deal struct {
 	skus  map[string]int // SKU name to quantity
 	price int            // Price after discount
@@ -42,7 +44,7 @@ type SKU struct {
 	price int
 }
 
-func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []Deal) int {
+func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []Deal) (int, error) {
 	total := 0
 
 	// Apply deals
@@ -55,9 +57,9 @@ func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []De
 	for sku, quantity := range cart {
 		price, ok := unitPriceMap[sku]
 		if !ok {
-			panic("No price for SKU")
+			return 0, fmt.Errorf("SKU %s does not exist", sku)
 		}
 		total += price * quantity
 	}
-	return total
+	return total, nil
 }
