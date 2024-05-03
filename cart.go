@@ -2,41 +2,40 @@ package ThinkMoneyCheckout
 
 import "fmt"
 
-type Deal struct {
-	skus  map[string]int // SKU name to quantity
-	price int            // Price after discount
+type Deal interface {
+	// ApplyTo modifies the cart by removing items to apply the deal.
+	// Returns the amount of money the deal will cost.
+	ApplyTo(cart map[string]int) int
+
+	// Applies returns true if the cart contains all the required SKUs in the corresponding
+	// quantities for the deal.
+	Applies(cart map[string]int) bool
 }
 
-// ApplyTo modifies the cart to remove the required quantity of each SKU in the deal.
-// Returns the total price of the deal.
-func (deal *Deal) ApplyTo(cart map[string]int) int {
-	for sku := range cart {
-		quantityRequired, inDeal := deal.skus[sku]
-		if inDeal {
-			cart[sku] -= quantityRequired
-		}
-	}
-
-	return deal.price
+// MultiPrice A deal of the form "buy {quantity} of {sku} for {price}".
+type MultiPrice struct {
+	sku      string
+	quantity int
+	price    int
 }
 
-// Applies returns true if the cart contains all the required SKUs in the corresponding
-// quantities for the deal.
-func (deal *Deal) Applies(cart map[string]int) bool {
-	// Check if all SKUs in the deal are in the cart
-	for sku, quantityRequired := range deal.skus {
-		// Deals shouldn't have negative or zero quantities but let's check anyway,
-		// since it would cause an infinite loop if somehow there was.
-		if quantityRequired <= 0 {
-			return false
-		}
-		numInCart, ok := cart[sku]
-		if !ok || numInCart < quantityRequired {
-			return false
-		}
+// ApplyTo removes {quantity} of {sku} from the cart and returns {price}
+func (deal *MultiPrice) ApplyTo(cart map[string]int) int {
+	numInCart, ok := cart[deal.sku]
+	// If the cart contains the SKU in the required quantity,
+	if ok && numInCart >= deal.quantity {
+		// Remove the items from the cart and return the deal price:
+		cart[deal.sku] -= deal.quantity
+		return deal.price
+	} else {
+		return 0
 	}
-	// If we get here, all SKUs in the deal are in the cart
-	return true
+}
+
+// Applies returns true if the cart contains at least {quantity} of {sku}
+func (deal *MultiPrice) Applies(cart map[string]int) bool {
+	numInCart, ok := cart[deal.sku]
+	return ok && numInCart >= deal.quantity
 }
 
 type SKU struct {
@@ -54,7 +53,7 @@ func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []De
 	}
 	cart = cartCopy
 
-	// ApplyTo deals
+	// Apply deals
 	for _, deal := range deals {
 		// A deal can apply multiple times:
 		for deal.Applies(cart) {

@@ -18,18 +18,8 @@ func TestCalculateTotal(t *testing.T) {
 		"D": 15,
 	}
 	exampleDeals := []Deal{
-		{
-			skus: map[string]int{
-				"A": 3,
-			},
-			price: 130,
-		},
-		{
-			skus: map[string]int{
-				"B": 2,
-			},
-			price: 45,
-		},
+		&MultiPrice{sku: "A", quantity: 3, price: 130},
+		&MultiPrice{sku: "B", quantity: 2, price: 45},
 	}
 	tests := []struct {
 		name  string
