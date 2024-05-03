@@ -7,22 +7,22 @@ type Deal struct {
 	price int            // Price after discount
 }
 
-func (deal *Deal) Apply(total int, cart map[string]int) (int, map[string]int) {
-	// We return a new cart instead of modifying the original one
-	cartAfterDealApplied := make(map[string]int)
-	for sku, quantity := range cart {
+// ApplyTo modifies the cart to remove the required quantity of each SKU in the deal.
+// Returns the total price of the deal.
+func (deal *Deal) ApplyTo(cart map[string]int) int {
+	for sku := range cart {
 		quantityRequired, inDeal := deal.skus[sku]
-		if !inDeal {
-			cartAfterDealApplied[sku] = quantity
-		} else {
-			cartAfterDealApplied[sku] = quantity - quantityRequired
+		if inDeal {
+			cart[sku] -= quantityRequired
 		}
 	}
 
-	return total + deal.price, cartAfterDealApplied
+	return deal.price
 }
 
-func (deal *Deal) AppliesTo(cart map[string]int) bool {
+// Applies returns true if the cart contains all the required SKUs in the corresponding
+// quantities for the deal.
+func (deal *Deal) Applies(cart map[string]int) bool {
 	// Check if all SKUs in the deal are in the cart
 	for sku, quantityRequired := range deal.skus {
 		// Deals shouldn't have negative or zero quantities but let's check anyway,
@@ -47,11 +47,18 @@ type SKU struct {
 func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []Deal) (int, error) {
 	total := 0
 
-	// Apply deals
+	// Make a deep copy of the cart, so we can modify it without affecting the original.
+	cartCopy := make(map[string]int, len(cart))
+	for sku, quantity := range cart {
+		cartCopy[sku] = quantity
+	}
+	cart = cartCopy
+
+	// ApplyTo deals
 	for _, deal := range deals {
 		// A deal can apply multiple times:
-		for deal.AppliesTo(cart) {
-			total, cart = deal.Apply(total, cart)
+		for deal.Applies(cart) {
+			total += deal.ApplyTo(cart)
 		}
 	}
 	for sku, quantity := range cart {
