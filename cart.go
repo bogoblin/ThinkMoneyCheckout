@@ -1,8 +1,8 @@
 package ThinkMoneyCheckout
 
 type Deal struct {
-	skus  map[SKU]int // SKU to quantity
-	price int         // Price after discount
+	skus  map[string]int // SKU name to quantity
+	price int            // Price after discount
 }
 
 type SKU struct {
