@@ -1,4 +1,4 @@
-package ThinkMoneyCheckout
+package main
 
 import (
 	"fmt"

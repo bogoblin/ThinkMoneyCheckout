@@ -1,4 +1,4 @@
-package ThinkMoneyCheckout
+package main
 
 import "fmt"
 
@@ -36,11 +36,6 @@ func (deal *MultiPrice) ApplyTo(cart map[string]int) int {
 func (deal *MultiPrice) Applies(cart map[string]int) bool {
 	numInCart, ok := cart[deal.sku]
 	return ok && numInCart >= deal.quantity
-}
-
-type SKU struct {
-	name  string
-	price int
 }
 
 func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []Deal) (int, error) {
