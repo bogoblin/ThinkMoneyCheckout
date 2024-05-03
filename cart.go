@@ -11,5 +11,9 @@ type SKU struct {
 }
 
 func CalculateTotal(skusInCart map[SKU]int, deals []Deal) int {
-	return 0
+	total := 0
+	for sku, quantity := range skusInCart {
+		total += sku.price * quantity
+	}
+	return total
 }
