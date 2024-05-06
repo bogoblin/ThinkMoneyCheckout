@@ -1,4 +1,4 @@
-package main
+package cart
 
 import "fmt"
 
@@ -14,19 +14,19 @@ type Deal interface {
 
 // MultiPrice A deal of the form "buy {quantity} of {sku} for {price}".
 type MultiPrice struct {
-	sku      string
-	quantity int
-	price    int
+	Sku      string
+	Quantity int
+	Price    int
 }
 
 // ApplyTo removes {quantity} of {sku} from the cart and returns {price}
 func (deal *MultiPrice) ApplyTo(cart map[string]int) int {
-	numInCart, ok := cart[deal.sku]
+	numInCart, ok := cart[deal.Sku]
 	// If the cart contains the SKU in the required quantity,
-	if ok && numInCart >= deal.quantity {
+	if ok && numInCart >= deal.Quantity {
 		// Remove the items from the cart and return the deal price:
-		cart[deal.sku] -= deal.quantity
-		return deal.price
+		cart[deal.Sku] -= deal.Quantity
+		return deal.Price
 	} else {
 		return 0
 	}
@@ -34,8 +34,8 @@ func (deal *MultiPrice) ApplyTo(cart map[string]int) int {
 
 // Applies returns true if the cart contains at least {quantity} of {sku}
 func (deal *MultiPrice) Applies(cart map[string]int) bool {
-	numInCart, ok := cart[deal.sku]
-	return ok && numInCart >= deal.quantity
+	numInCart, ok := cart[deal.Sku]
+	return ok && numInCart >= deal.Quantity
 }
 
 func CalculateTotal(cart map[string]int, unitPriceMap map[string]int, deals []Deal) (int, error) {

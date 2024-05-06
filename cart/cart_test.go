@@ -1,6 +1,7 @@
-package main
+package cart_test
 
 import (
+	. "ThinkMoneyCheckout/cart"
 	"testing"
 )
 
@@ -17,8 +18,8 @@ func TestCalculateTotal(t *testing.T) {
 		"D": 15,
 	}
 	exampleDeals := []Deal{
-		&MultiPrice{sku: "A", quantity: 3, price: 130},
-		&MultiPrice{sku: "B", quantity: 2, price: 45},
+		&MultiPrice{Sku: "A", Quantity: 3, Price: 130},
+		&MultiPrice{Sku: "B", Quantity: 2, Price: 45},
 	}
 	tests := []struct {
 		name     string

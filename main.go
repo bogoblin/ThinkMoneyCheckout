@@ -1,6 +1,7 @@
 package main
 
 import (
+	. "ThinkMoneyCheckout/cart"
 	"bufio"
 	"fmt"
 	"os"
@@ -14,8 +15,8 @@ func main() {
 		"D": 15,
 	}
 	deals := []Deal{
-		&MultiPrice{sku: "A", quantity: 3, price: 130},
-		&MultiPrice{sku: "B", quantity: 2, price: 45},
+		&MultiPrice{Sku: "A", Quantity: 3, Price: 130},
+		&MultiPrice{Sku: "B", Quantity: 2, Price: 45},
 	}
 
 	cart := make(map[string]int)
