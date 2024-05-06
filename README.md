@@ -24,3 +24,11 @@ Alternatively you can type in items interactively, then press CTRL+D to send an 
 ```bash
 go test cart/cart_test.go
 ```
+
+## Adding new SKUs and deals
+
+SKUs and deals are defined in two arrays in `main.go`. You can add new SKUs and deals by adding to the arrays.
+
+![img.png](img.png)
+
+You can also implement different types of deals, so long as they implement the `Deal` interface defined in `cart.go`.
