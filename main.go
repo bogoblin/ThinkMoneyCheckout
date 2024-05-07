@@ -20,14 +20,9 @@ func main() {
 	}
 
 	cart := make(map[string]int)
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		sku, err := reader.ReadString('\n')
-		if err != nil {
-			break
-		}
-		// Remove the newline character:
-		sku = sku[:len(sku)-1]
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		sku := scanner.Text()
 		// Check if the SKU is in the unit price map:
 		_, ok := prices[sku]
 		if !ok {
