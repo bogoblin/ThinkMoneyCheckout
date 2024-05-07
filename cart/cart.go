@@ -20,7 +20,7 @@ type MultiPrice struct {
 }
 
 // ApplyTo removes {quantity} of {sku} from the cart and returns {price}
-func (deal *MultiPrice) ApplyTo(cart map[string]int) int {
+func (deal MultiPrice) ApplyTo(cart map[string]int) int {
 	numInCart, ok := cart[deal.Sku]
 	// If the cart contains the SKU in the required quantity,
 	if ok && numInCart >= deal.Quantity {
@@ -33,7 +33,7 @@ func (deal *MultiPrice) ApplyTo(cart map[string]int) int {
 }
 
 // Applies returns true if the cart contains at least {quantity} of {sku}
-func (deal *MultiPrice) Applies(cart map[string]int) bool {
+func (deal MultiPrice) Applies(cart map[string]int) bool {
 	numInCart, ok := cart[deal.Sku]
 	return ok && numInCart >= deal.Quantity
 }
