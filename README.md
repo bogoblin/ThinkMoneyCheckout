@@ -27,7 +27,7 @@ go test cart/cart_test.go
 
 ## Adding new SKUs and deals
 
-SKUs and deals are defined in two arrays in `main.go`. You can add new SKUs and deals by adding to the arrays.
+SKUs and deals are defined in two slices in `main.go`. You can add new SKUs and deals by adding to the arrays.
 
 ![img.png](img.png)
 
